@@ -27,3 +27,6 @@ replay_pid*
 .idea/
 *.iml
 out/
+
+# Confidencial do banco shhh
+src/dao/Conexao.java
