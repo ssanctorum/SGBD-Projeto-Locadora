@@ -1,17 +1,17 @@
 package dao;
 
 import model.Cliente;
-import java.util.ArrayList;
-import java.util.List;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ClienteDAO implements DAO<Cliente> {
 
     @Override
     public void inserir(Cliente cliente) {
-        String sql = "INSERT INTO clientes (nome, cpf, telefone, email, endereco, cnh, validade_cnh, data_cadastro) VALUES (?,?,?,?,?,?,?,?)";
+        String sql = "INSERT INTO clientes (nome, cpf, telefone, email, endereco, cnh_registro, cnh_validade, data_cadastro) VALUES (?,?,?,?,?,?,?,?)";
         try (Connection conn = Conexao.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, cliente.getPessoaNome());
@@ -24,51 +24,88 @@ public class ClienteDAO implements DAO<Cliente> {
             stmt.setString(8, cliente.getClienteDataCadastro());
             stmt.executeUpdate();
         } catch (Exception e) {
-            throw new RuntimeException("Erro ao inserir o cliente: " + e.getMessage());
+            throw new RuntimeException("Erro ao inserir cliente: " + e.getMessage());
         }
-
     }
 
     @Override
     public List<Cliente> listarTodos() {
         String sql = "SELECT * FROM clientes";
-        List<Cliente> listaClientes = new ArrayList<>();
+        List<Cliente> lista = new ArrayList<>();
         try (Connection conn = Conexao.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet resultSet = stmt.executeQuery()) {
-
-            /// atualizar coluna de acordo com o sgbd q nn to com ele aq
-            while (resultSet.next()) {
-                Cliente cliente = new Cliente(
-                        resultSet.getString("nome"),
-                        resultSet.getString("cpf"),
-                        resultSet.getString("telefone"),
-                        resultSet.getString("email"),
-                        resultSet.getString("endereco"),
-                        resultSet.getString("cnh"),
-                        resultSet.getString("validadeCNH"),
-                        resultSet.getString("data_cadastro")
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                Cliente c = new Cliente(
+                        rs.getString("nome"),
+                        rs.getString("cpf"),
+                        rs.getString("telefone"),
+                        rs.getString("email"),
+                        rs.getString("endereco"),
+                        rs.getString("cnh_registro"),
+                        rs.getString("cnh_validade"),
+                        rs.getString("data_cadastro")
                 );
-                listaClientes.add(cliente);
+                lista.add(c);
             }
-
         } catch (Exception e) {
-            throw new RuntimeException("Erro ao listar os clientes: " + e.getMessage());
+            throw new RuntimeException("Erro ao listar clientes: " + e.getMessage());
         }
-
-        return listaClientes;
+        return lista;
     }
 
+    public Cliente buscarPorCpf(String cpf) {
+        String sql = "SELECT * FROM clientes WHERE cpf = ?";
+        try (Connection conn = Conexao.conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, cpf);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return new Cliente(
+                        rs.getString("nome"),
+                        rs.getString("cpf"),
+                        rs.getString("telefone"),
+                        rs.getString("email"),
+                        rs.getString("endereco"),
+                        rs.getString("cnh_registro"),
+                        rs.getString("cnh_validade"),
+                        rs.getString("data_cadastro")
+                );
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao buscar cliente por CPF: " + e.getMessage());
+        }
+        return null;
+    }
+
+    public Cliente buscarPorCnh(String cnh) {
+        String sql = "SELECT * FROM clientes WHERE cnh_registro = ?";
+        try (Connection conn = Conexao.conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, cnh);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return new Cliente(
+                        rs.getString("nome"),
+                        rs.getString("cpf"),
+                        rs.getString("telefone"),
+                        rs.getString("email"),
+                        rs.getString("endereco"),
+                        rs.getString("cnh_registro"),
+                        rs.getString("cnh_validade"),
+                        rs.getString("data_cadastro")
+                );
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao buscar cliente por CNH: " + e.getMessage());
+        }
+        return null;
+    }
 
     @Override
-    public void atualizar (Cliente cliente){
-
-    }
+    public void deletarPorString(String id) {}
+    // nao vai usar... massa, so por causa da interface
 
     @Override
-    public void deletar (Cliente cliente){
-
-    }
-
-
-
+    public void deletarPorInt(int id) {}
+}   // mesmo caso do deletarPorString kkkkkkk
