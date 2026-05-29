@@ -1,5 +1,8 @@
 package controller;
 
+import dao.ClienteDAO;
+import dao.FuncionarioDAO;
+import dao.VeiculoDAO;
 import model.Cliente;
 import model.Funcionario;
 import model.Veiculo;
@@ -8,15 +11,20 @@ import view.Layouts_JOptionPane;
 import javax.swing.JOptionPane;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 public class Metodos {
 
-//essas são as tres listas principais
+    ClienteDAO clienteDAO = new ClienteDAO();
+    FuncionarioDAO funcionarioDAO = new FuncionarioDAO();
+    VeiculoDAO veiculosDAO = new VeiculoDAO();
+
+    //essas são as tres listas principais
 
     //aqui começam os metodos
     //como os metodos possuem somente variaveis locais repetirei tudo
 
-    //menus
+    ///MENUS PRINCIPAIS
     public void menuCliente(){
 
         int loop = -1;
@@ -165,7 +173,7 @@ public class Metodos {
         } while (loop != 0);
     }
 
-    //metodos do menu cliente
+    /// METODOS DO MENU CLIENTE
     public void cadastroCliente(){
 
         int comecarCadastro = JOptionPane.showConfirmDialog(null,"Para iniciar o cadastro, certifique-se de ter esses dados em mãos:\n\n - Nome completo\n - CPF \n - Telefone \n - E-mail \n - Endereço\n - Número da CNH\n - Validade da CNH\n\nQuer prosseguir?","Cadastro de Cliente",JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
@@ -173,9 +181,6 @@ public class Metodos {
         if (comecarCadastro == 1 || comecarCadastro == -1){
             return;
         }
-
-        //string declaradas com "" pra dar certo no while e tratamento de erros
-        //o null é caso ele aperte no X e queira sair
 
         String nomeCliente = "";
         while (nomeCliente.trim().isEmpty()){
@@ -192,11 +197,8 @@ public class Metodos {
             if (cpfCliente == null) return;
             if (cpfCliente.trim().isEmpty()) JOptionPane.showMessageDialog(null,"O CPF não pode ficar vazio!","Atenção!",JOptionPane.INFORMATION_MESSAGE);
 
-            for (Cliente cliente : clientes){
-                if (cpfCliente.equalsIgnoreCase(cliente.getPessoaCpf())){
-                    JOptionPane.showMessageDialog(null, "CPF já cadastrado!", "Atenção!", JOptionPane.INFORMATION_MESSAGE);
-                    cpfCliente = "";
-                }
+            if (clienteDAO.buscarPorCpf(cpfCliente) != null){
+                JOptionPane.showMessageDialog(null, "CPF já cadastrado!", "Atenção!", JOptionPane.INFORMATION_MESSAGE);cpfCliente = "";
             }
         }
 
@@ -225,56 +227,61 @@ public class Metodos {
         }
 
         String cnhCliente = "";
-        while (cnhCliente.trim().isEmpty()){
+        while (cnhCliente.trim().isEmpty()) {
             cnhCliente = JOptionPane.showInputDialog(null, "Digite o n° de Registro da CNH:", "Cadastro de Cliente", JOptionPane.INFORMATION_MESSAGE);
 
             if (cnhCliente == null) return;
-            if (cnhCliente.trim().isEmpty()) JOptionPane.showMessageDialog(null,"O Registro da CNH não pode ficar vazio!","Atenção!",JOptionPane.INFORMATION_MESSAGE);
+            if (cnhCliente.trim().isEmpty())
+                JOptionPane.showMessageDialog(null, "O Registro da CNH não pode ficar vazio!", "Atenção!", JOptionPane.INFORMATION_MESSAGE);
 
-            for (Cliente cliente : clientes){
-                if (cnhCliente.equalsIgnoreCase(cliente.getClienteCNH())){
-                    JOptionPane.showMessageDialog(null, "CNH já cadastrada!", "Atenção!", JOptionPane.INFORMATION_MESSAGE);
-                    cnhCliente = "";
-                }
+            if (clienteDAO.buscarPorCnh(cnhCliente) != null){
+                JOptionPane.showMessageDialog(null, "CNH já cadastrada!", "Atenção!", JOptionPane.INFORMATION_MESSAGE);cpfCliente = "";
+                cnhCliente = "";
             }
         }
 
-        String validadeCnhCliente = "";
-        while (validadeCnhCliente.trim().isEmpty()){
-            validadeCnhCliente = JOptionPane.showInputDialog(null, "Digite a data de validade da CNH:\n Modelo: dd/mm/aaaa", "Cadastro de Cliente", JOptionPane.INFORMATION_MESSAGE);
+            String validadeCnhCliente = "";
+            while (validadeCnhCliente.trim().isEmpty()) {
+                validadeCnhCliente = JOptionPane.showInputDialog(null, "Digite a data de validade da CNH:\n Modelo: dd/mm/aaaa", "Cadastro de Cliente", JOptionPane.INFORMATION_MESSAGE);
 
-            if (validadeCnhCliente == null) return;
-            if (validadeCnhCliente.trim().isEmpty()) JOptionPane.showMessageDialog(null,"A data de validade não pode ficar vazia!","Atenção!",JOptionPane.INFORMATION_MESSAGE);
+                if (validadeCnhCliente == null) return;
+                if (validadeCnhCliente.trim().isEmpty())
+                    JOptionPane.showMessageDialog(null, "A data de validade não pode ficar vazia!", "Atenção!", JOptionPane.INFORMATION_MESSAGE);
+            }
+
+            LocalDateTime datahora = LocalDateTime.now();
+            DateTimeFormatter datahoraFormatado = DateTimeFormatter.ofPattern("dd/MM/yyyy 'às' HH:mm");
+            String dataCadastro = datahora.format(datahoraFormatado);
+
+            Cliente cliente = new Cliente(nomeCliente, cpfCliente, telefoneCliente, emailCliente, enderecoCliente, cnhCliente, validadeCnhCliente, dataCadastro);
+            clienteDAO.inserir(cliente);
+
+            JOptionPane.showMessageDialog(null, "Cliente cadastrado com sucesso!\n" + cliente.toString(), "Cadastro de Cliente", JOptionPane.INFORMATION_MESSAGE);
+
         }
 
-        LocalDateTime datahora = LocalDateTime.now();
-        DateTimeFormatter datahoraFormatado = DateTimeFormatter.ofPattern("dd/MM/yyyy 'às' HH:mm");
-        String dataCadastro = datahora.format(datahoraFormatado);
-
-        Cliente cliente = new Cliente(nomeCliente, cpfCliente, telefoneCliente, emailCliente, enderecoCliente, cnhCliente, validadeCnhCliente, dataCadastro);
-        clientes.add(cliente);
-
-        JOptionPane.showMessageDialog(null, "Cliente cadastrado com sucesso!\n" + cliente.toString(), "Cadastro de Cliente", JOptionPane.INFORMATION_MESSAGE);
-
-    }
-
     public void listarCliente(){
+
+        List<Cliente> clientes = clienteDAO.listarTodos();
+
 
         if (clientes.isEmpty()){
             JOptionPane.showMessageDialog(null,"Não há nenhum cliente cadastrado.", "Listar Clientes", JOptionPane.INFORMATION_MESSAGE);
             return;
         }
 
-        for (Cliente cliente : clientes){
-            if (cliente == clientes.getLast()){
-                JOptionPane.showOptionDialog(null, cliente.toString(), "Listar Clientes", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, new String[]{"Fim da lista"}, "Fim da lista.");
-                return;
-            }
-            JOptionPane.showOptionDialog(null, cliente.toString(), "Listar Clientes", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, new String[]{"Ver próximo..."}, "Ver próximo...");
-        }
+        for (int i = 0; i < clientes.size(); i++){
 
+            Cliente cliente = clientes.get(i);
+            if (i == clientes.size()-1){
+                JOptionPane.showOptionDialog(null, cliente.toString(), "Listar Clientes", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, new String[]{"Fim da lista"}, "Fim da lista.");
+            } else {
+                JOptionPane.showOptionDialog(null, cliente.toString(), "Listar Clientes", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, new String[]{"Ver próximo..."}, "Ver próximo...");
+            }
+        }
     }
 
+    /// PAREI AQUI 29/05 19:55
     public void verificarCliente(){
 
         if (clientes.isEmpty()){
@@ -354,7 +361,7 @@ public class Metodos {
 
     }
 
-    //metodos do menu funcionario
+    /// METODOS DO MENU FUNCIONARIO
     public void admissaoFuncionario(){
 
         int comecarAdmissao = JOptionPane.showConfirmDialog(null,"Para iniciar a admissão, certifique-se de ter esses dados em mãos:\n\n - Nome completo\n - CPF \n - Telefone \n - E-mail \n - Endereço\n\nVocê precisará criar também uma matrícula, atribuir um cargo e definir um salário\n\nQuer prosseguir?","Admissão de Funcionário",JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
