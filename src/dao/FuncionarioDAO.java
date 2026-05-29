@@ -7,54 +7,126 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FuncionarioDAO {
+public class FuncionarioDAO implements DAO<Funcionario> {
 
     @Override
     public void inserir(Funcionario funcionario) {
-        String sql = "INSERT INTO clientes (nome, cpf, telefone, email, endereco, matricula, cargo, salario, data_admissao) VALUES (?,?,?,?,?,?,?,?,?)";
+        String sql = "INSERT INTO funcionarios (matricula, nome, cpf, telefone, email, endereco, cargo, salario, data_admissao) VALUES (?,?,?,?,?,?,?,?,?)";
         try (Connection conn = Conexao.conectar();
-             PreparedStatement stmt = conn.prepareStatement(sql)){
-            stmt.setString(1, funcionario.getPessoaNome());
-            stmt.setString(2, funcionario.getPessoaCpf());
-            stmt.setString(3, funcionario.getPessoaTelefone());
-            stmt.setString(4, funcionario.getPessoaEmail());
-            stmt.setString(5, funcionario.getPessoaEndereco());
-            stmt.setInt(6, funcionario.getFuncionarioMatricula());
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, funcionario.getFuncionarioMatricula());
+            stmt.setString(2, funcionario.getPessoaNome());
+            stmt.setString(3, funcionario.getPessoaCpf());
+            stmt.setString(4, funcionario.getPessoaTelefone());
+            stmt.setString(5, funcionario.getPessoaEmail());
+            stmt.setString(6, funcionario.getPessoaEndereco());
             stmt.setString(7, funcionario.getFuncionarioCargo());
             stmt.setDouble(8, funcionario.getFuncionarioSalario());
             stmt.setString(9, funcionario.getFuncionarioDataAdmissao());
             stmt.executeUpdate();
         } catch (Exception e) {
-            throw new RuntimeException("Erro ao inserir o cliente: "+ e.getMessage());
+            throw new RuntimeException("Erro ao inserir funcionário: " + e.getMessage());
         }
     }
 
     @Override
-    public List<Funcionario> listarTodos (){
+    public List<Funcionario> listarTodos() {
         String sql = "SELECT * FROM funcionarios";
-        List<Funcionario> listaFuncionarios = new ArrayList<>();
+        List<Funcionario> lista = new ArrayList<>();
         try (Connection conn = Conexao.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet resultSet = stmt.executeQuery()) {
-
-            while (resultSet.next()) {
-                Funcionario funcionario = new Funcionario(
-                        resultSet.getString("nome"),
-                        resultSet.getString("cpf"),
-                        resultSet.getString("telefone"),
-                        resultSet.getString("email"),
-                        resultSet.getString("endereco"),
-                        resultSet.getInt("matricula"),
-                        resultSet.getString("cargo"),
-                        resultSet.getDouble("salario"),
-                        resultSet.getString("data_admissao")
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                Funcionario f = new Funcionario(
+                        rs.getString("nome"),
+                        rs.getString("cpf"),
+                        rs.getString("telefone"),
+                        rs.getString("email"),
+                        rs.getString("endereco"),
+                        rs.getInt("matricula"),
+                        rs.getString("cargo"),
+                        rs.getDouble("salario"),
+                        rs.getString("data_admissao")
                 );
-                listaFuncionarios.add(funcionario);
+                lista.add(f);
             }
-
         } catch (Exception e) {
-            throw new RuntimeException("Erro ao listar os funcionários: "+ e.getMessage());
+            throw new RuntimeException("Erro ao listar funcionários: " + e.getMessage());
         }
+        return lista;
+    }
 
-        return listaFuncionarios;
+    @Override
+    public void deletarPorString(String cpf) {
+        String sql = "DELETE FROM funcionarios WHERE cpf = ?";
+        try (Connection conn = Conexao.conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, cpf);
+            stmt.executeUpdate();
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao remover funcionário por CPF: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void deletarPorInt(int matricula) {
+        String sql = "DELETE FROM funcionarios WHERE matricula = ?";
+        try (Connection conn = Conexao.conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, matricula);
+            stmt.executeUpdate();
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao remover funcionário por matrícula: " + e.getMessage());
+        }
+    }
+
+    public Funcionario buscarPorCpf(String cpf) {
+        String sql = "SELECT * FROM funcionarios WHERE cpf = ?";
+        try (Connection conn = Conexao.conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, cpf);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return new Funcionario(
+                        rs.getString("nome"),
+                        rs.getString("cpf"),
+                        rs.getString("telefone"),
+                        rs.getString("email"),
+                        rs.getString("endereco"),
+                        rs.getInt("matricula"),
+                        rs.getString("cargo"),
+                        rs.getDouble("salario"),
+                        rs.getString("data_admissao")
+                );
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao buscar funcionário por CPF: " + e.getMessage());
+        }
+        return null;
+    }
+
+    public Funcionario buscarPorMatricula(int matricula) {
+        String sql = "SELECT * FROM funcionarios WHERE matricula = ?";
+        try (Connection conn = Conexao.conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, matricula);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return new Funcionario(
+                        rs.getString("nome"),
+                        rs.getString("cpf"),
+                        rs.getString("telefone"),
+                        rs.getString("email"),
+                        rs.getString("endereco"),
+                        rs.getInt("matricula"),
+                        rs.getString("cargo"),
+                        rs.getDouble("salario"),
+                        rs.getString("data_admissao")
+                );
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao buscar funcionário por matrícula: " + e.getMessage());
+        }
+        return null;
+    }
 }
