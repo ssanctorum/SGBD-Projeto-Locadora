@@ -35,12 +35,19 @@ public class Cliente extends Pessoa{
         this.clienteDataCadastro = clienteDataCadastro;
     }
 
-    //construtor
+    //construtores
     public Cliente(String pessoaNome, String pessoaCpf, String pessoaTelefone, String pessoaEmail, String pessoaEndereco, String clienteCNH, String clienteValidadeCNH, String clienteDataCadastro) {
         super(pessoaNome, pessoaCpf, pessoaTelefone, pessoaEmail, pessoaEndereco);
         this.clienteCNH = clienteCNH;
         this.clienteValidadeCNH = clienteValidadeCNH;
         this.clienteDataCadastro = clienteDataCadastro;
+    }
+    ///  esse aqui em específico vai ser sem data, já que o SGBD vai criar a data em si
+    public Cliente(String pessoaNome, String pessoaCpf, String pessoaTelefone, String pessoaEmail, String pessoaEndereco, String clienteCNH, String clienteValidadeCNH) {
+        super(pessoaNome, pessoaCpf, pessoaTelefone, pessoaEmail, pessoaEndereco);
+        this.clienteCNH = clienteCNH;
+        this.clienteValidadeCNH = clienteValidadeCNH;
+        this.clienteDataCadastro = null;
     }
 
     //toString
