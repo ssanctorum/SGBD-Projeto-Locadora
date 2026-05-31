@@ -45,13 +45,22 @@ public class Funcionario extends Pessoa {
         this.funcionarioDataAdmissao = funcionarioDataAdmissao;
     }
 
-    //construtor
+    //construtores
     public Funcionario(String pessoaNome, String pessoaCpf, String pessoaTelefone, String pessoaEmail, String pessoaEndereco, int funcionarioMatricula, String funcionarioCargo, double funcionarioSalario, String funcionarioDataAdmissao) {
         super(pessoaNome, pessoaCpf, pessoaTelefone, pessoaEmail, pessoaEndereco);
         this.funcionarioMatricula = funcionarioMatricula;
         this.funcionarioCargo = funcionarioCargo;
         this.funcionarioSalario = funcionarioSalario;
         this.funcionarioDataAdmissao = funcionarioDataAdmissao;
+    }
+
+    ///  esse aqui em específico vai ser sem data e sem matricula, já que o SGBD vai criar a data em si
+    public Funcionario(String pessoaNome, String pessoaCpf, String pessoaTelefone, String pessoaEmail, String pessoaEndereco, String funcionarioCargo, double funcionarioSalario) {
+        super(pessoaNome, pessoaCpf, pessoaTelefone, pessoaEmail, pessoaEndereco);
+        this.funcionarioMatricula = 0;
+        this.funcionarioCargo = funcionarioCargo;
+        this.funcionarioSalario = funcionarioSalario;
+        this.funcionarioDataAdmissao = null;
     }
 
     //to string
