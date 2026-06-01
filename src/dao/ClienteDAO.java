@@ -11,7 +11,7 @@ public class ClienteDAO implements DAO<Cliente> {
 
     @Override
     public void inserir(Cliente cliente) {
-        String sql = "INSERT INTO clientes (nome, cpf, telefone, email, endereco, cnh_registro, cnh_validade, data_cadastro) VALUES (?,?,?,?,?,?,?,?)";
+        String sql = "INSERT INTO clientes (nome, cpf, telefone, email, endereco, cnh_registro, cnh_validade) VALUES (?,?,?,?,?,?,?)";
         try (Connection conn = Conexao.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, cliente.getPessoaNome());
@@ -21,7 +21,6 @@ public class ClienteDAO implements DAO<Cliente> {
             stmt.setString(5, cliente.getPessoaEndereco());
             stmt.setString(6, cliente.getClienteCNH());
             stmt.setString(7, cliente.getClienteValidadeCNH());
-            stmt.setString(8, cliente.getClienteDataCadastro());
             stmt.executeUpdate();
         } catch (Exception e) {
             throw new RuntimeException("Erro ao inserir cliente: " + e.getMessage());
