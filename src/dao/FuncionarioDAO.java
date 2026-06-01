@@ -11,18 +11,16 @@ public class FuncionarioDAO implements DAO<Funcionario> {
 
     @Override
     public void inserir(Funcionario funcionario) {
-        String sql = "INSERT INTO funcionarios (matricula, nome, cpf, telefone, email, endereco, cargo, salario, data_admissao) VALUES (?,?,?,?,?,?,?,?,?)";
+        String sql = "INSERT INTO funcionarios (nome, cpf, telefone, email, endereco, cargo, salario) VALUES (?,?,?,?,?,?,?)";
         try (Connection conn = Conexao.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, funcionario.getFuncionarioMatricula());
-            stmt.setString(2, funcionario.getPessoaNome());
-            stmt.setString(3, funcionario.getPessoaCpf());
-            stmt.setString(4, funcionario.getPessoaTelefone());
-            stmt.setString(5, funcionario.getPessoaEmail());
-            stmt.setString(6, funcionario.getPessoaEndereco());
-            stmt.setString(7, funcionario.getFuncionarioCargo());
-            stmt.setDouble(8, funcionario.getFuncionarioSalario());
-            stmt.setString(9, funcionario.getFuncionarioDataAdmissao());
+            stmt.setString(1, funcionario.getPessoaNome());
+            stmt.setString(2, funcionario.getPessoaCpf());
+            stmt.setString(3, funcionario.getPessoaTelefone());
+            stmt.setString(4, funcionario.getPessoaEmail());
+            stmt.setString(5, funcionario.getPessoaEndereco());
+            stmt.setString(6, funcionario.getFuncionarioCargo());
+            stmt.setDouble(7, funcionario.getFuncionarioSalario());
             stmt.executeUpdate();
         } catch (Exception e) {
             throw new RuntimeException("Erro ao inserir funcionário: " + e.getMessage());
