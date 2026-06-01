@@ -173,7 +173,7 @@ public class Metodos {
         } while (loop != 0);
     }
 
-    /// METODOS DO MENU CLIENTE
+    /// OK - METODOS DO MENU CLIENTE
     public void cadastroCliente(){
 
         int comecarCadastro = JOptionPane.showConfirmDialog(null,"Para iniciar o cadastro, certifique-se de ter esses dados em mãos:\n\n - Nome completo\n - CPF \n - Telefone \n - E-mail \n - Endereço\n - Número da CNH\n - Validade da CNH\n\nQuer prosseguir?","Cadastro de Cliente",JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
@@ -198,7 +198,8 @@ public class Metodos {
             if (cpfCliente.trim().isEmpty()) JOptionPane.showMessageDialog(null,"O CPF não pode ficar vazio!","Atenção!",JOptionPane.INFORMATION_MESSAGE);
 
             if (clienteDAO.buscarPorCpf(cpfCliente) != null){
-                JOptionPane.showMessageDialog(null, "CPF já cadastrado!", "Atenção!", JOptionPane.INFORMATION_MESSAGE);cpfCliente = "";
+                JOptionPane.showMessageDialog(null, "CPF já cadastrado!", "Atenção!", JOptionPane.INFORMATION_MESSAGE);
+                cpfCliente = "";
             }
         }
 
@@ -235,7 +236,7 @@ public class Metodos {
                 JOptionPane.showMessageDialog(null, "O Registro da CNH não pode ficar vazio!", "Atenção!", JOptionPane.INFORMATION_MESSAGE);
 
             if (clienteDAO.buscarPorCnh(cnhCliente) != null){
-                JOptionPane.showMessageDialog(null, "CNH já cadastrada!", "Atenção!", JOptionPane.INFORMATION_MESSAGE);cpfCliente = "";
+                JOptionPane.showMessageDialog(null, "CNH já cadastrada!", "Atenção!", JOptionPane.INFORMATION_MESSAGE);
                 cnhCliente = "";
             }
         }
@@ -249,11 +250,7 @@ public class Metodos {
                     JOptionPane.showMessageDialog(null, "A data de validade não pode ficar vazia!", "Atenção!", JOptionPane.INFORMATION_MESSAGE);
             }
 
-            LocalDateTime datahora = LocalDateTime.now();
-            DateTimeFormatter datahoraFormatado = DateTimeFormatter.ofPattern("dd/MM/yyyy 'às' HH:mm");
-            String dataCadastro = datahora.format(datahoraFormatado);
-
-            Cliente cliente = new Cliente(nomeCliente, cpfCliente, telefoneCliente, emailCliente, enderecoCliente, cnhCliente, validadeCnhCliente, dataCadastro);
+            Cliente cliente = new Cliente(nomeCliente, cpfCliente, telefoneCliente, emailCliente, enderecoCliente, cnhCliente, validadeCnhCliente);
             clienteDAO.inserir(cliente);
 
             JOptionPane.showMessageDialog(null, "Cliente cadastrado com sucesso!\n" + cliente.toString(), "Cadastro de Cliente", JOptionPane.INFORMATION_MESSAGE);
@@ -281,8 +278,8 @@ public class Metodos {
         }
     }
 
-    /// PAREI AQUI 29/05 19:55
     public void verificarCliente(){
+        List<Cliente> clientes = clienteDAO.listarTodos();
 
         if (clientes.isEmpty()){
             JOptionPane.showMessageDialog(null,"Não há nenhum cliente cadastrado.", "Verificar Cliente", JOptionPane.INFORMATION_MESSAGE);
@@ -317,13 +314,14 @@ public class Metodos {
                             JOptionPane.showMessageDialog(null,"Você não digitou nada!", "Atenção!", JOptionPane.INFORMATION_MESSAGE);
                             continue;
                         }
-                        for (Cliente cliente : clientes){
-                            if (cpfVerify.equalsIgnoreCase(cliente.getClienteCNH())) {
-                                JOptionPane.showMessageDialog(null, cliente.toString(), "Verificar Cliente", JOptionPane.INFORMATION_MESSAGE);
-                                return;
-                            }
+
+                        Cliente clientePesquisaCPF = clienteDAO.buscarPorCpf(cpfVerify);
+
+                        if (clientePesquisaCPF != null){
+                            JOptionPane.showMessageDialog(null, clientePesquisaCPF.toString(), "Verificar Cliente", JOptionPane.INFORMATION_MESSAGE);
+                        } else {
+                            JOptionPane.showMessageDialog(null, "Cliente não encontrado! Tente novamente.\nVerifique se o CPF foi digitado corretamente.", "Verificar Cliente", JOptionPane.INFORMATION_MESSAGE);
                         }
-                        JOptionPane.showMessageDialog(null, "Cliente não encontrado! Tente novamente.\nVerifique também se o CPF foi digitado conforme o modelo.", "Verificar Cliente", JOptionPane.INFORMATION_MESSAGE);
                         break;
 
                     case 2:
@@ -335,13 +333,15 @@ public class Metodos {
                             continue;
                         }
 
-                        for (Cliente cliente : clientes){
-                            if (cnhVerify.equalsIgnoreCase(cliente.getClienteCNH())) {
-                                JOptionPane.showMessageDialog(null, cliente.toString(), "Verificar Cliente", JOptionPane.INFORMATION_MESSAGE);
-                                return;
-                            }
+                        Cliente pesquisaPorCNH = clienteDAO.buscarPorCnh(cnhVerify);
+
+                        if (pesquisaPorCNH != null) {
+                            JOptionPane.showMessageDialog(null, pesquisaPorCNH.toString(), "Verificar Cliente", JOptionPane.INFORMATION_MESSAGE);
+                        } else {
+
+                            JOptionPane.showMessageDialog(null, "Cliente não encontrado pela CNH! Tente novamente.\n", "Verificar Cliente", JOptionPane.INFORMATION_MESSAGE);
                         }
-                        JOptionPane.showMessageDialog(null, "Cliente não encontrado! Tente novamente.\n", "Verificar Cliente", JOptionPane.INFORMATION_MESSAGE);
+
                         break;
 
                     case 0:
@@ -361,10 +361,10 @@ public class Metodos {
 
     }
 
-    /// METODOS DO MENU FUNCIONARIO
+    /// OK - METODOS DO MENU FUNCIONARIO
     public void admissaoFuncionario(){
 
-        int comecarAdmissao = JOptionPane.showConfirmDialog(null,"Para iniciar a admissão, certifique-se de ter esses dados em mãos:\n\n - Nome completo\n - CPF \n - Telefone \n - E-mail \n - Endereço\n\nVocê precisará criar também uma matrícula, atribuir um cargo e definir um salário\n\nQuer prosseguir?","Admissão de Funcionário",JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
+        int comecarAdmissao = JOptionPane.showConfirmDialog(null,"Para iniciar a admissão, certifique-se de ter esses dados em mãos:\n\n - Nome completo\n - CPF \n - Telefone \n - E-mail \n - Endereço\n\nVocê precisará atribuir um cargo e definir um salário\n\nQuer prosseguir?","Admissão de Funcionário",JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
 
         if (comecarAdmissao == 1 || comecarAdmissao == -1){
             return;
@@ -385,11 +385,9 @@ public class Metodos {
             if (cpfFuncionario == null) return;
             if (cpfFuncionario.trim().isEmpty()) JOptionPane.showMessageDialog(null,"O CPF não pode ficar vazio!","Atenção!",JOptionPane.INFORMATION_MESSAGE);
 
-            for (Funcionario funcionario : funcionarios){
-                if (cpfFuncionario.equalsIgnoreCase(funcionario.getPessoaCpf())){
-                    JOptionPane.showMessageDialog(null, "CPF já cadastrado!", "Atenção!", JOptionPane.INFORMATION_MESSAGE);
-                    cpfFuncionario = "";
-                }
+            if (funcionarioDAO.buscarPorCpf(cpfFuncionario) != null){
+                JOptionPane.showMessageDialog(null, "CPF já cadastrado!", "Admissão de Funcionário", JOptionPane.INFORMATION_MESSAGE);
+                cpfFuncionario = "";
             }
         }
 
@@ -417,23 +415,6 @@ public class Metodos {
             if (enderecoFuncionario.trim().isEmpty()) JOptionPane.showMessageDialog(null,"O endereço não pode ficar vazio!","Atenção!",JOptionPane.INFORMATION_MESSAGE);
         }
 
-        String matriculaFuncionario = "";
-        int matriculaFuncionarioInt = 0;
-        while (matriculaFuncionario.trim().isEmpty()){
-            try {
-                matriculaFuncionario = JOptionPane.showInputDialog(null, "Insira uma matrícula para o funcionário:", "Admissão de Funcionário", JOptionPane.INFORMATION_MESSAGE);
-
-                if (matriculaFuncionario == null) return;
-                if (matriculaFuncionario.trim().isEmpty()) JOptionPane.showMessageDialog(null,"A matrícula não pode ficar vazia!","Atenção!",JOptionPane.INFORMATION_MESSAGE);
-
-                matriculaFuncionarioInt = Integer.parseInt(matriculaFuncionario);
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(null, "Ocorreu um erro no sistema, tente novamente.\nErro: "+ e.getMessage(), "Erro!", JOptionPane.ERROR_MESSAGE);
-                matriculaFuncionario = "";
-            }
-
-        }
-
         String cargoFuncionario = "";
         while (cargoFuncionario.trim().isEmpty()){
             cargoFuncionario = JOptionPane.showInputDialog(null, "Insira o cargo do funcionário:", "Admissão de Funcionário", JOptionPane.INFORMATION_MESSAGE);
@@ -459,32 +440,35 @@ public class Metodos {
 
         }
 
-        LocalDateTime datahora = LocalDateTime.now();
-        DateTimeFormatter datahoraFormatado = DateTimeFormatter.ofPattern("dd/MM/yyyy 'às' HH:mm");
-        String dataFuncionario = datahora.format(datahoraFormatado);
-
-        Funcionario funcionario = new Funcionario(nomeFuncionario, cpfFuncionario, telefoneFuncionario, emailFuncionario, enderecoFuncionario, matriculaFuncionarioInt, cargoFuncionario, salarioFuncionarioDouble, dataFuncionario);
-        funcionarios.add(funcionario);
+        Funcionario funcionario = new Funcionario(nomeFuncionario, cpfFuncionario, telefoneFuncionario, emailFuncionario, enderecoFuncionario, cargoFuncionario, salarioFuncionarioDouble);
+        funcionarioDAO.inserir(funcionario);
 
         JOptionPane.showMessageDialog(null, "Funcionário contratado com sucesso!\n" + funcionario.toString(), "Admissão de Funcionário", JOptionPane.INFORMATION_MESSAGE);
     }
 
     public void listarFuncionario(){
+        List<Funcionario> funcionarios = funcionarioDAO.listarTodos();
+
         if (funcionarios.isEmpty()){
             JOptionPane.showMessageDialog(null,"Não há nenhum funcionario contratado.", "Listar Funcionários", JOptionPane.INFORMATION_MESSAGE);
             return;
         }
 
-        for (Funcionario funcionario : funcionarios){
-            if (funcionario == funcionarios.getLast()){
+        for (int i = 0; i < funcionarios.size(); i++){
+            Funcionario funcionario = funcionarios.get(i);
+
+            if (i == funcionarios.size() - 1){
                 JOptionPane.showOptionDialog(null, funcionario.toString(), "Listar Funcionários", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, new String[]{"Fim da lista"}, "Fim da lista.");
-                return;
+            } else {
+                JOptionPane.showOptionDialog(null, funcionario.toString(), "Listar Funcionários", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, new String[]{"Ver próximo..."}, "Ver próximo...");
             }
-            JOptionPane.showOptionDialog(null, funcionario.toString(), "Listar Funcionários", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, new String[]{"Ver próximo..."}, "Ver próximo...");
         }
     }
 
     public void removerFuncionario(){
+        List<Funcionario> funcionarios = funcionarioDAO.listarTodos();
+
+
         if (funcionarios.isEmpty()){
             JOptionPane.showMessageDialog(null,"Não há nenhum funcionário contratado.", "Remover Funcionário", JOptionPane.INFORMATION_MESSAGE);
             return;
@@ -511,66 +495,58 @@ public class Metodos {
                 switch (opcaoRemoverInt){
 
                     case 1:
-                        int loopCpf = -1;
+                        String cpfRemove = JOptionPane.showInputDialog(null, "Digite o CPF para remover, seguindo o modelo:\n000.000.000-00", "Remover Funcionário", JOptionPane.PLAIN_MESSAGE);
 
-                        do {
-                            String cpfRemove = JOptionPane.showInputDialog(null, "Digite o CPF para remover, seguindo o modelo:\n000.000.000-00", "Remover Funcionário", JOptionPane.PLAIN_MESSAGE);
+                        if (cpfRemove == null) return;
 
-                            if (cpfRemove == null) return;
+                        if (cpfRemove.isEmpty()){
+                            JOptionPane.showMessageDialog(null,"Você não digitou nada!", "Atenção!", JOptionPane.INFORMATION_MESSAGE);
+                            continue;
+                        }
 
-                            if (cpfRemove.isEmpty()){
+                        Funcionario removerFuncionarioCPF = funcionarioDAO.buscarPorCpf(cpfRemove);
+
+                        if (removerFuncionarioCPF != null){
+                            JOptionPane.showMessageDialog(null, "O seguinte funcionário foi removido:\n" + removerFuncionarioCPF.toString(), "Remover Funcionário", JOptionPane.INFORMATION_MESSAGE);
+                            funcionarioDAO.deletarPorString(cpfRemove);
+                            return;
+                        } else {
+                            JOptionPane.showMessageDialog(null, "Funcionário não encontrado! Tente novamente.\nVerifique também se o CPF foi digitado corretamente.", "Remover Funcionário", JOptionPane.INFORMATION_MESSAGE);
+                        }
+
+                        break;
+
+                    case 2:
+                        String matriculaRemove = "";
+                        int matriculaRemoveInt = 0;
+
+                        try{
+                            matriculaRemove = JOptionPane.showInputDialog(null, "Digite a matrícula para remover:\n", "Remover Funcionário", JOptionPane.PLAIN_MESSAGE);
+
+                            if (matriculaRemove == null) return;
+
+                            matriculaRemove = matriculaRemove.trim();
+
+                            if (matriculaRemove.isEmpty()){
                                 JOptionPane.showMessageDialog(null,"Você não digitou nada!", "Atenção!", JOptionPane.INFORMATION_MESSAGE);
                                 continue;
                             }
 
-                            for (Funcionario funcionario : funcionarios){
-                                if (cpfRemove.equalsIgnoreCase(funcionario.getPessoaCpf())) {
-                                    JOptionPane.showMessageDialog(null, "O seguinte funcionário foi removido:\n" + funcionario.toString(), "Remover Funcionário", JOptionPane.INFORMATION_MESSAGE);
-                                    funcionarios.remove(funcionario);
-                                    return;
-                                }
-                            }
-                            JOptionPane.showMessageDialog(null, "Funcionário não encontrado! Tente novamente.\nVerifique também se o CPF foi digitado conforme o modelo.", "Remover Funcionário", JOptionPane.INFORMATION_MESSAGE);
-                        } while (loopCpf != 0);
-                        break;
+                            matriculaRemoveInt = Integer.parseInt(matriculaRemove);
 
-                    case 2:
-                        int loopMatr = -1;
+                            Funcionario removerFuncionarioMatricula = funcionarioDAO.buscarPorMatricula(matriculaRemoveInt);
 
-                        String matriculaRemove = "";
-                        int matriculaRemoveInt = 0;
-
-                        do {
-                            try{
-                                matriculaRemove = JOptionPane.showInputDialog(null, "Digite a matrícula para remover:\n", "Remover Funcionário", JOptionPane.PLAIN_MESSAGE);
-
-                                if (matriculaRemove == null) return;
-
-                                matriculaRemove = matriculaRemove.trim();
-
-                                if (matriculaRemove.isEmpty()){
-                                    JOptionPane.showMessageDialog(null,"Você não digitou nada!", "Atenção!", JOptionPane.INFORMATION_MESSAGE);
-                                    continue;
-                                }
-
-                                matriculaRemoveInt = Integer.parseInt(matriculaRemove);
-
-                                for (Funcionario funcionario : funcionarios){
-                                    if (matriculaRemoveInt == funcionario.getFuncionarioMatricula()){
-                                        JOptionPane.showMessageDialog(null, "O seguinte funcionário foi removido:\n" + funcionario.toString(), "Remover Funcionário", JOptionPane.INFORMATION_MESSAGE);
-                                        funcionarios.remove(funcionario);
-                                        return;
-                                    }
-                                }
+                            if (removerFuncionarioMatricula != null){
+                                JOptionPane.showMessageDialog(null, "O seguinte funcionário foi removido:\n" + removerFuncionarioMatricula.toString(), "Remover Funcionário", JOptionPane.INFORMATION_MESSAGE);
+                                funcionarioDAO.deletarPorInt(matriculaRemoveInt);
+                                return;
+                            } else {
                                 JOptionPane.showMessageDialog(null, "Funcionário não encontrado! Tente novamente.\n", "Remover Funcionário", JOptionPane.INFORMATION_MESSAGE);
+                            }
 
                             } catch (Exception e) {
                                 JOptionPane.showMessageDialog(null, "Ocorreu um erro no sistema, tente novamente.\nErro: "+ e.getMessage(), "Erro!", JOptionPane.ERROR_MESSAGE);
-                                matriculaRemove = "";
-
                             }
-
-                        } while (loopMatr != 0);
 
                         break;
 
@@ -591,7 +567,7 @@ public class Metodos {
 
     }
 
-    //metodos do menu veiculo
+    /// METODOS DO MENU VEICULO
     public void cadastrarVeiculo(){
 
         int cadastroVeiculo = JOptionPane.showConfirmDialog(null,"Para iniciar o cadastro, certifique-se de ter esses dados do veículo em mãos:\n\n - Placa\n - Modelo\n - Marca\n - Ano \n - Cor\n\n - Você deverá criar um valor para a diária do veículo\n\nQuer prosseguir?","Cadastro de Cliente",JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
@@ -607,11 +583,9 @@ public class Metodos {
             if (placaVeiculo == null) return;
             if (placaVeiculo.trim().isEmpty()) JOptionPane.showMessageDialog(null,"O nome não pode ficar vazio!","Atenção!",JOptionPane.INFORMATION_MESSAGE);
 
-            for (Veiculo veiculo : veiculos){
-                if (placaVeiculo.equalsIgnoreCase(veiculo.getVeiculoPlaca())){
-                    JOptionPane.showMessageDialog(null,"Já existe um veículo com essa placa!","Cadastrar Veículo",JOptionPane.INFORMATION_MESSAGE);
-                    placaVeiculo = "";
-                }
+            if (veiculosDAO.buscarPorPlaca(placaVeiculo) != null){
+                JOptionPane.showMessageDialog(null, "Já existe um veículo com essa placa cadastrado!", "Cadastrar Veículo", JOptionPane.INFORMATION_MESSAGE);
+                placaVeiculo = "";
             }
         }
 
@@ -672,57 +646,59 @@ public class Metodos {
             }
         }
 
-        boolean estaDisponivel = true;
-        String disponibilidadeVeiculo;
 
-        if (estaDisponivel){ disponibilidadeVeiculo = "Está disponível."; }
-        else { disponibilidadeVeiculo = "Não está disponível";}
-
-        Veiculo veiculo = new Veiculo(placaVeiculo, modeloVeiculo, marcaVeiculo, veiculoAnoInt, corVeiculo, veiculoDiariaDouble, disponibilidadeVeiculo);
-        veiculos.add(veiculo);
+        Veiculo veiculo = new Veiculo(placaVeiculo, modeloVeiculo, marcaVeiculo, veiculoAnoInt, corVeiculo, veiculoDiariaDouble, "Está disponível");
+        veiculosDAO.inserir(veiculo);
 
         JOptionPane.showMessageDialog(null, "Veículo adicionado com sucesso!\n" + veiculo.toString(), "Adicionar Veículo", JOptionPane.INFORMATION_MESSAGE);
 
     }
 
     public void listarVeiculo(){
+        List<Veiculo> veiculos = veiculosDAO.listarTodos();
+
         if (veiculos.isEmpty()){
             JOptionPane.showMessageDialog(null,"Não há nenhum veículo para listar.", "Listar Frota", JOptionPane.INFORMATION_MESSAGE);
             return;
         }
 
-        for (Veiculo veiculo : veiculos){
-            if (veiculo == veiculos.getLast()){
+        for (int i = 0; i < veiculos.size(); i++){
+            Veiculo veiculo = veiculos.get(i);
+
+            if (i == veiculos.size() - 1){
                 JOptionPane.showOptionDialog(null, veiculo.toString(), "Listar Frota", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, new String[]{"Fim da lista"}, "Fim da lista.");
                 return;
+            } else {
+                JOptionPane.showOptionDialog(null, veiculo.toString(), "Listar Frota", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, new String[]{"Ver próximo..."}, "Ver próximo...");
             }
-            JOptionPane.showOptionDialog(null, veiculo.toString(), "Listar Frota", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, new String[]{"Ver próximo..."}, "Ver próximo...");
         }
     }
 
     public void pesquisarVeiculo(){
+        List<Veiculo> veiculos = veiculosDAO.listarTodos();
 
         if (veiculos.isEmpty()){
             JOptionPane.showMessageDialog(null,"Não há nenhum veículo para pesquisar.", "Pesquisar por placa", JOptionPane.INFORMATION_MESSAGE);
             return;
         }
 
-        for (Veiculo veiculo : veiculos){
-            String pesquisaVeiculo = JOptionPane.showInputDialog(null,"Digite exatamente a placa do veículo: \n", "Pesquisar por placa", JOptionPane.PLAIN_MESSAGE);
+        String pesquisaVeiculo = JOptionPane.showInputDialog(null,"Digite exatamente a placa do veículo: \n", "Pesquisar por placa", JOptionPane.PLAIN_MESSAGE);
 
-            if (pesquisaVeiculo == null) {
-                return;
-            }
+        if (pesquisaVeiculo == null) {
+            return;
+        }
 
-            if (pesquisaVeiculo.trim().isEmpty()){
-                JOptionPane.showMessageDialog(null,"Você não digitou nada!","Atenção!",JOptionPane.INFORMATION_MESSAGE);
-                return;
-            }
+        if (pesquisaVeiculo.trim().isEmpty()){
+            JOptionPane.showMessageDialog(null,"Você não digitou nada!","Atenção!",JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
 
-            if (pesquisaVeiculo.trim().equalsIgnoreCase(veiculo.getVeiculoMarca())){
-                JOptionPane.showMessageDialog(null,veiculo.toString(),"Pesquisar por placa",JOptionPane.INFORMATION_MESSAGE);
-                return;
-            }
+        Veiculo veiculo = veiculosDAO.buscarPorPlaca(pesquisaVeiculo.trim());
+
+        if (veiculo != null){
+            JOptionPane.showMessageDialog(null, veiculo.toString(), "Pesquisar por placa", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, "Não foi possível encontrar o veículo com essa placa.", "Pesquisar por placa", JOptionPane.INFORMATION_MESSAGE);
         }
 
         JOptionPane.showMessageDialog(null, "Não foi possível encontrar o veículo com essa placa.");
