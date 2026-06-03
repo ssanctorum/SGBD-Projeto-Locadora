@@ -11,7 +11,7 @@ public class FuncionarioDAO implements DAO<Funcionario> {
 
     @Override
     public void inserir(Funcionario funcionario) {
-        String sql = "INSERT INTO funcionarios (nome, cpf, telefone, email, endereco, cargo, salario) VALUES (?,?,?,?,?,?,?)";
+        String sql = "INSERT INTO \"Funcionarios\" (nome, cpf, telefone, email, endereco, cargo, salario) VALUES (?,?,?,?,?,?,?)";
         try (Connection conn = Conexao.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, funcionario.getPessoaNome());
@@ -29,7 +29,7 @@ public class FuncionarioDAO implements DAO<Funcionario> {
 
     @Override
     public List<Funcionario> listarTodos() {
-        String sql = "SELECT * FROM funcionarios";
+        String sql = "SELECT * FROM \"Funcionarios\"";
         List<Funcionario> lista = new ArrayList<>();
         try (Connection conn = Conexao.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -44,7 +44,7 @@ public class FuncionarioDAO implements DAO<Funcionario> {
                         rs.getInt("matricula"),
                         rs.getString("cargo"),
                         rs.getDouble("salario"),
-                        rs.getString("data_admissao")
+                        rs.getTimestamp("data_admissao") != null ? new java.text.SimpleDateFormat("dd/MM/yyyy").format(rs.getTimestamp("data_admissao")) : null
                 );
                 lista.add(f);
             }
@@ -56,7 +56,7 @@ public class FuncionarioDAO implements DAO<Funcionario> {
 
     @Override
     public void deletarPorString(String cpf) {
-        String sql = "DELETE FROM funcionarios WHERE cpf = ?";
+        String sql = "DELETE FROM \"Funcionarios\" WHERE cpf = ?";
         try (Connection conn = Conexao.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, cpf);
@@ -68,7 +68,7 @@ public class FuncionarioDAO implements DAO<Funcionario> {
 
     @Override
     public void deletarPorInt(int matricula) {
-        String sql = "DELETE FROM funcionarios WHERE matricula = ?";
+        String sql = "DELETE FROM \"Funcionarios\" WHERE matricula = ?";
         try (Connection conn = Conexao.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, matricula);
@@ -79,7 +79,7 @@ public class FuncionarioDAO implements DAO<Funcionario> {
     }
 
     public Funcionario buscarPorCpf(String cpf) {
-        String sql = "SELECT * FROM funcionarios WHERE cpf = ?";
+        String sql = "SELECT * FROM \"Funcionarios\" WHERE cpf = ?";
         try (Connection conn = Conexao.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, cpf);
@@ -94,7 +94,7 @@ public class FuncionarioDAO implements DAO<Funcionario> {
                         rs.getInt("matricula"),
                         rs.getString("cargo"),
                         rs.getDouble("salario"),
-                        rs.getString("data_admissao")
+                        rs.getTimestamp("data_admissao") != null ? new java.text.SimpleDateFormat("dd/MM/yyyy").format(rs.getTimestamp("data_admissao")) : null
                 );
             }
         } catch (Exception e) {
@@ -104,7 +104,7 @@ public class FuncionarioDAO implements DAO<Funcionario> {
     }
 
     public Funcionario buscarPorMatricula(int matricula) {
-        String sql = "SELECT * FROM funcionarios WHERE matricula = ?";
+        String sql = "SELECT * FROM \"Funcionarios\" WHERE matricula = ?";
         try (Connection conn = Conexao.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, matricula);
@@ -119,7 +119,7 @@ public class FuncionarioDAO implements DAO<Funcionario> {
                         rs.getInt("matricula"),
                         rs.getString("cargo"),
                         rs.getDouble("salario"),
-                        rs.getString("data_admissao")
+                        rs.getTimestamp("data_admissao") != null ? new java.text.SimpleDateFormat("dd/MM/yyyy").format(rs.getTimestamp("data_admissao")) : null
                 );
             }
         } catch (Exception e) {
