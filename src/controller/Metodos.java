@@ -9,8 +9,6 @@ import model.Veiculo;
 import view.Layouts_JOptionPane;
 
 import javax.swing.JOptionPane;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class Metodos {
@@ -18,11 +16,6 @@ public class Metodos {
     ClienteDAO clienteDAO = new ClienteDAO();
     FuncionarioDAO funcionarioDAO = new FuncionarioDAO();
     VeiculoDAO veiculosDAO = new VeiculoDAO();
-
-    //essas são as tres listas principais
-
-    //aqui começam os metodos
-    //como os metodos possuem somente variaveis locais repetirei tudo
 
     ///MENUS PRINCIPAIS
     public void menuCliente(){
@@ -173,7 +166,7 @@ public class Metodos {
         } while (loop != 0);
     }
 
-    /// OK - METODOS DO MENU CLIENTE
+    /// METODOS DO MENU CLIENTE
     public void cadastroCliente(){
 
         int comecarCadastro = JOptionPane.showConfirmDialog(null,"Para iniciar o cadastro, certifique-se de ter esses dados em mãos:\n\n - Nome completo\n - CPF \n - Telefone \n - E-mail \n - Endereço\n - Número da CNH\n - Validade da CNH\n\nQuer prosseguir?","Cadastro de Cliente",JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
@@ -248,13 +241,23 @@ public class Metodos {
                 if (validadeCnhCliente == null) return;
                 if (validadeCnhCliente.trim().isEmpty())
                     JOptionPane.showMessageDialog(null, "A data de validade não pode ficar vazia!", "Atenção!", JOptionPane.INFORMATION_MESSAGE);
+
+                try {
+                    java.time.LocalDate.parse(validadeCnhCliente.trim(),
+                            java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(null, "Data inválida! Use o formato dd/MM/yyyy.\nExemplo: 25/12/2027", "Atenção!", JOptionPane.INFORMATION_MESSAGE);
+                    validadeCnhCliente = "";
+                }
             }
 
             Cliente cliente = new Cliente(nomeCliente, cpfCliente, telefoneCliente, emailCliente, enderecoCliente, cnhCliente, validadeCnhCliente);
             clienteDAO.inserir(cliente);
 
-            JOptionPane.showMessageDialog(null, "Cliente cadastrado com sucesso!\n" + cliente.toString(), "Cadastro de Cliente", JOptionPane.INFORMATION_MESSAGE);
+            Cliente clienteCadastrado = clienteDAO.buscarPorCpf(cpfCliente);
 
+
+            JOptionPane.showMessageDialog(null, "Cliente cadastrado com sucesso!\n" + clienteCadastrado.toString(), "Cadastro de Cliente", JOptionPane.INFORMATION_MESSAGE);
         }
 
     public void listarCliente(){
@@ -341,7 +344,6 @@ public class Metodos {
 
                             JOptionPane.showMessageDialog(null, "Cliente não encontrado pela CNH! Tente novamente.\n", "Verificar Cliente", JOptionPane.INFORMATION_MESSAGE);
                         }
-
                         break;
 
                     case 0:
@@ -361,7 +363,7 @@ public class Metodos {
 
     }
 
-    /// OK - METODOS DO MENU FUNCIONARIO
+    /// METODOS DO MENU FUNCIONARIO
     public void admissaoFuncionario(){
 
         int comecarAdmissao = JOptionPane.showConfirmDialog(null,"Para iniciar a admissão, certifique-se de ter esses dados em mãos:\n\n - Nome completo\n - CPF \n - Telefone \n - E-mail \n - Endereço\n\nVocê precisará atribuir um cargo e definir um salário\n\nQuer prosseguir?","Admissão de Funcionário",JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
@@ -443,7 +445,10 @@ public class Metodos {
         Funcionario funcionario = new Funcionario(nomeFuncionario, cpfFuncionario, telefoneFuncionario, emailFuncionario, enderecoFuncionario, cargoFuncionario, salarioFuncionarioDouble);
         funcionarioDAO.inserir(funcionario);
 
-        JOptionPane.showMessageDialog(null, "Funcionário contratado com sucesso!\n" + funcionario.toString(), "Admissão de Funcionário", JOptionPane.INFORMATION_MESSAGE);
+        Funcionario funcionarioCadastrado = funcionarioDAO.buscarPorCpf(cpfFuncionario);
+
+
+        JOptionPane.showMessageDialog(null, "Funcionário contratado com sucesso!\n" + funcionarioCadastrado.toString(), "Admissão de Funcionário", JOptionPane.INFORMATION_MESSAGE);
     }
 
     public void listarFuncionario(){
@@ -700,8 +705,5 @@ public class Metodos {
         } else {
             JOptionPane.showMessageDialog(null, "Não foi possível encontrar o veículo com essa placa.", "Pesquisar por placa", JOptionPane.INFORMATION_MESSAGE);
         }
-
-        JOptionPane.showMessageDialog(null, "Não foi possível encontrar o veículo com essa placa.");
-
     }
 }
