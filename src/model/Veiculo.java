@@ -2,7 +2,7 @@ package model;
 
 public class Veiculo {
 
-    //dados private veículos
+    //dados private
     private String veiculoPlaca;
 
     private String veiculoModelo;
@@ -17,7 +17,7 @@ public class Veiculo {
 
     private String veiculoDisponivel;
 
-    //getters veículos
+    //getters
     public String getVeiculoPlaca() {
         return veiculoPlaca;
     }
@@ -46,7 +46,7 @@ public class Veiculo {
         return veiculoDisponivel;
     }
 
-    //setters veículos
+    //setters
     public void setVeiculoPlaca(String veiculoPlaca) {
         this.veiculoPlaca = veiculoPlaca;
     }

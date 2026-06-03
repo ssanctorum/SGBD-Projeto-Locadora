@@ -2,7 +2,7 @@ package model;
 
 public class Funcionario extends Pessoa {
 
-    //dados private dos funcionarios
+    //dados private
     private int funcionarioMatricula;
 
     private String funcionarioCargo;
@@ -11,7 +11,7 @@ public class Funcionario extends Pessoa {
 
     private String funcionarioDataAdmissao;
 
-    //getters funcionarios
+    //getters
     public int getFuncionarioMatricula() {
         return funcionarioMatricula;
     }
@@ -28,7 +28,7 @@ public class Funcionario extends Pessoa {
         return funcionarioDataAdmissao;
     }
 
-    //setters funcionarios
+    //setters
     public void setFuncionarioMatricula(int funcionarioMatricula) {
         this.funcionarioMatricula = funcionarioMatricula;
     }
@@ -54,7 +54,7 @@ public class Funcionario extends Pessoa {
         this.funcionarioDataAdmissao = funcionarioDataAdmissao;
     }
 
-    ///  esse aqui em específico vai ser sem data e sem matricula, já que o SGBD vai criar a data em si
+    // esse construtor em específico não possui matrícula, nem data de admissão definida, já que o SGBD vai criar a data em si
     public Funcionario(String pessoaNome, String pessoaCpf, String pessoaTelefone, String pessoaEmail, String pessoaEndereco, String funcionarioCargo, double funcionarioSalario) {
         super(pessoaNome, pessoaCpf, pessoaTelefone, pessoaEmail, pessoaEndereco);
         this.funcionarioMatricula = 0;
@@ -63,7 +63,7 @@ public class Funcionario extends Pessoa {
         this.funcionarioDataAdmissao = null;
     }
 
-    //to string
+    //toString
     @Override
     public String toString() {
         return "\n Nome: " + getPessoaNome() +

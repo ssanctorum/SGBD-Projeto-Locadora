@@ -2,14 +2,14 @@ package model;
 
 public class Cliente extends Pessoa{
 
-    //dados private clientes
+    //dados private
     private String clienteCNH;
 
     private String clienteValidadeCNH;
 
     private String clienteDataCadastro;
 
-    //getters cliente
+    //getters
     public String getClienteCNH() {
         return clienteCNH;
     }
@@ -22,7 +22,7 @@ public class Cliente extends Pessoa{
         return clienteDataCadastro;
     }
 
-    //setters cliente
+    //setters
     public void setClienteCNH(String clienteCNH) {
         this.clienteCNH = clienteCNH;
     }
@@ -42,7 +42,7 @@ public class Cliente extends Pessoa{
         this.clienteValidadeCNH = clienteValidadeCNH;
         this.clienteDataCadastro = clienteDataCadastro;
     }
-    ///  esse aqui em específico vai ser sem data, já que o SGBD vai criar a data em si
+    // esse construtor em específico não possui data, já que o SGBD vai criar a data em si
     public Cliente(String pessoaNome, String pessoaCpf, String pessoaTelefone, String pessoaEmail, String pessoaEndereco, String clienteCNH, String clienteValidadeCNH) {
         super(pessoaNome, pessoaCpf, pessoaTelefone, pessoaEmail, pessoaEndereco);
         this.clienteCNH = clienteCNH;

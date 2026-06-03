@@ -2,7 +2,7 @@ package model;
 
 abstract class Pessoa {
 
-    //dados pessoa abstrata
+    //dados pessoa
     private String pessoaNome;
 
     private String pessoaCpf;
@@ -13,7 +13,7 @@ abstract class Pessoa {
 
     private String pessoaEndereco;
 
-    //getters pessoa abstrata
+    //getters pessoa
     public String getPessoaNome() {
         return pessoaNome;
     }
@@ -34,7 +34,7 @@ abstract class Pessoa {
         return pessoaEndereco;
     }
 
-    //setters pessoa abstrata
+    //setters pessoa
     public void setPessoaNome(String pessoaNome) {
         this.pessoaNome = pessoaNome;
     }
