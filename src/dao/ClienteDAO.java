@@ -11,7 +11,7 @@ public class ClienteDAO implements DAO<Cliente> {
 
     @Override
     public void inserir(Cliente cliente) {
-        String sql = "INSERT INTO clientes (nome, cpf, telefone, email, endereco, cnh_registro, cnh_validade) VALUES (?,?,?,?,?,?,?)";
+        String sql = "INSERT INTO \"Clientes\" (nome, cpf, telefone, email, endereco, cnh_registro, cnh_validade) VALUES (?,?,?,?,?,?,?)";
         try (Connection conn = Conexao.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, cliente.getPessoaNome());
@@ -20,7 +20,7 @@ public class ClienteDAO implements DAO<Cliente> {
             stmt.setString(4, cliente.getPessoaEmail());
             stmt.setString(5, cliente.getPessoaEndereco());
             stmt.setString(6, cliente.getClienteCNH());
-            stmt.setString(7, cliente.getClienteValidadeCNH());
+            stmt.setDate(7, java.sql.Date.valueOf(java.time.LocalDate.parse(cliente.getClienteValidadeCNH(), java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"))));
             stmt.executeUpdate();
         } catch (Exception e) {
             throw new RuntimeException("Erro ao inserir cliente: " + e.getMessage());
@@ -29,7 +29,7 @@ public class ClienteDAO implements DAO<Cliente> {
 
     @Override
     public List<Cliente> listarTodos() {
-        String sql = "SELECT * FROM clientes";
+        String sql = "SELECT * FROM \"Clientes\"";
         List<Cliente> lista = new ArrayList<>();
         try (Connection conn = Conexao.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -42,8 +42,8 @@ public class ClienteDAO implements DAO<Cliente> {
                         rs.getString("email"),
                         rs.getString("endereco"),
                         rs.getString("cnh_registro"),
-                        rs.getString("cnh_validade"),
-                        rs.getString("data_cadastro")
+                        rs.getDate("cnh_validade") != null ? rs.getDate("cnh_validade").toLocalDate().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")) : null,
+                        rs.getTimestamp("data_cadastro") != null ? new java.text.SimpleDateFormat("dd/MM/yyyy 'às' HH:mm").format(rs.getTimestamp("data_cadastro")) : null
                 );
                 lista.add(c);
             }
@@ -54,7 +54,7 @@ public class ClienteDAO implements DAO<Cliente> {
     }
 
     public Cliente buscarPorCpf(String cpf) {
-        String sql = "SELECT * FROM clientes WHERE cpf = ?";
+        String sql = "SELECT * FROM \"Clientes\" WHERE cpf = ?";
         try (Connection conn = Conexao.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, cpf);
@@ -67,8 +67,8 @@ public class ClienteDAO implements DAO<Cliente> {
                         rs.getString("email"),
                         rs.getString("endereco"),
                         rs.getString("cnh_registro"),
-                        rs.getString("cnh_validade"),
-                        rs.getString("data_cadastro")
+                        rs.getDate("cnh_validade") != null ? rs.getDate("cnh_validade").toLocalDate().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")) : null,
+                        rs.getTimestamp("data_cadastro") != null ? new java.text.SimpleDateFormat("dd/MM/yyyy 'às' HH:mm").format(rs.getTimestamp("data_cadastro")) : null
                 );
             }
         } catch (Exception e) {
@@ -78,7 +78,7 @@ public class ClienteDAO implements DAO<Cliente> {
     }
 
     public Cliente buscarPorCnh(String cnh) {
-        String sql = "SELECT * FROM clientes WHERE cnh_registro = ?";
+        String sql = "SELECT * FROM \"Clientes\" WHERE cnh_registro = ?";
         try (Connection conn = Conexao.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, cnh);
@@ -91,8 +91,8 @@ public class ClienteDAO implements DAO<Cliente> {
                         rs.getString("email"),
                         rs.getString("endereco"),
                         rs.getString("cnh_registro"),
-                        rs.getString("cnh_validade"),
-                        rs.getString("data_cadastro")
+                        rs.getDate("cnh_validade") != null ? rs.getDate("cnh_validade").toLocalDate().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")) : null,
+                        rs.getTimestamp("data_cadastro") != null ? new java.text.SimpleDateFormat("dd/MM/yyyy 'às' HH:mm").format(rs.getTimestamp("data_cadastro")) : null
                 );
             }
         } catch (Exception e) {
@@ -102,9 +102,8 @@ public class ClienteDAO implements DAO<Cliente> {
     }
 
     @Override
-    public void deletarPorString(String id) {}
-    // nao vai usar... massa, so por causa da interface
+    public void deletarPorString(String id) {/*somente para completar a interface*/}
 
     @Override
-    public void deletarPorInt(int id) {}
-}   // mesmo caso do deletarPorString kkkkkkk
+    public void deletarPorInt(int id) {/*somente para completar a interface*/}
+}
