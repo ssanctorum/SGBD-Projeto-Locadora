@@ -11,7 +11,7 @@ public class VeiculoDAO implements DAO<Veiculo> {
 
     @Override
     public void inserir(Veiculo veiculo) {
-        String sql = "INSERT INTO veiculos (placa, modelo, marca, ano, cor, valor_diaria, disponibilidade) VALUES (?,?,?,?,?,?,?)";
+        String sql = "INSERT INTO \"Veiculos\" (placa, modelo, marca, ano, cor, valor_diaria, disponibilidade) VALUES (?,?,?,?,?,?,?)";
         try (Connection conn = Conexao.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, veiculo.getVeiculoPlaca());
@@ -29,7 +29,7 @@ public class VeiculoDAO implements DAO<Veiculo> {
 
     @Override
     public List<Veiculo> listarTodos() {
-        String sql = "SELECT * FROM veiculos";
+        String sql = "SELECT * FROM \"Veiculos\"";
         List<Veiculo> lista = new ArrayList<>();
         try (Connection conn = Conexao.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -54,7 +54,7 @@ public class VeiculoDAO implements DAO<Veiculo> {
     }
 
     public Veiculo buscarPorPlaca(String placa) {
-        String sql = "SELECT * FROM veiculos WHERE placa = ?";
+        String sql = "SELECT * FROM \"Veiculos\" WHERE placa = ?";
         try (Connection conn = Conexao.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, placa);
@@ -78,12 +78,8 @@ public class VeiculoDAO implements DAO<Veiculo> {
     }
 
     @Override
-    public void deletarPorString(String id) {
-        //mais um so pra completar interface
-    }
+    public void deletarPorString(String id) {/*somente para completar a interface*/}
 
     @Override
-    public void deletarPorInt(int id) {
-        //same as above
-    }
+    public void deletarPorInt(int id) {/*somente para completar a interface*/}
 }
