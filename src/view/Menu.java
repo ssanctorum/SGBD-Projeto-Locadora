@@ -48,6 +48,10 @@ public class Menu {
                         metodos.menuVeiculo();
                         break;
 
+                    case 4:
+                        metodos.menuAluguel();
+                        break;
+
                     case 0:
                         opcaoLoop = 0;
                         break;

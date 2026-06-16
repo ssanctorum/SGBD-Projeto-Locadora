@@ -7,6 +7,7 @@ public class Layouts_JOptionPane {
             "\n[1] - Cliente\n" +
             "[2] - Funcionário\n" +
             "[3] - Veículos\n" +
+            "[4] - Aluguel\n" +
             "[0] - Sair\n\n";
 
     public static final String menuCliente = "————— LOCADORA DE VEÍCULOS —————\n"+
