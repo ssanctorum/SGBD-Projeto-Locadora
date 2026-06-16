@@ -68,7 +68,7 @@ public class Funcionario extends Pessoa {
     public String toString() {
         return "\n Nome: " + getPessoaNome() +
                 "\n CPF: " + getPessoaCpf() +
-                "\n Telefone :" + getPessoaTelefone() +
+                "\n Telefone: " + getPessoaTelefone() +
                 "\n E-mail: " + getPessoaEmail() +
                 "\n Endereço: " + getPessoaEndereco() +
                 "\n Matrícula: " + getFuncionarioMatricula() +

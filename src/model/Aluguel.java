@@ -47,4 +47,15 @@ public class Aluguel {
         this.valorTotal = valorTotal;
         this.status = status;
     }
+
+    @Override
+    public String toString() {
+        return  "\n ID do Aluguel: " + id +
+                "\n CPF do Cliente: " + cpfCliente +
+                "\n Placa do Veículo: " + placaVeiculo +
+                "\n Data de Início: " + dataInicio +
+                "\n Data de Devolução: " + dataDevolucao +
+                "\n Valor Total: R$ " + String.format("%.2f", valorTotal) +
+                "\n Status: " + status + "\n\n";
+    }
 }

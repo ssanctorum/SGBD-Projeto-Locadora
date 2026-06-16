@@ -56,7 +56,7 @@ public class Cliente extends Pessoa{
         return
                 "\n Nome: " + getPessoaNome() +
                 "\n CPF: " + getPessoaCpf() +
-                "\n Telefone :" + getPessoaTelefone() +
+                "\n Telefone: " + getPessoaTelefone() +
                 "\n E-mail: " + getPessoaEmail() +
                 "\n Endereço: " + getPessoaEndereco() +
                 "\n Registro CNH: " + clienteCNH +
