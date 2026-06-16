@@ -82,4 +82,16 @@ public class VeiculoDAO implements DAO<Veiculo> {
 
     @Override
     public void deletarPorInt(int id) {/*somente para completar a interface*/}
+    
+    public void atualizarDisponibilidade(String placa, boolean disponivel) {
+        String sql = "UPDATE \"Veiculos\" SET disponibilidade = ? WHERE placa = ?";
+        try (Connection conn = Conexao.conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setBoolean(1, disponivel);
+            stmt.setString(2, placa);
+            stmt.executeUpdate();
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao atualizar disponibilidade: " + e.getMessage());
+        }
+    }
 }
