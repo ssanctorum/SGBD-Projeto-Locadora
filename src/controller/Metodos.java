@@ -1,8 +1,10 @@
 package controller;
 
+import dao.AluguelDAO;
 import dao.ClienteDAO;
 import dao.FuncionarioDAO;
 import dao.VeiculoDAO;
+import model.Aluguel;
 import model.Cliente;
 import model.Funcionario;
 import model.Veiculo;
@@ -16,6 +18,7 @@ public class Metodos {
     ClienteDAO clienteDAO = new ClienteDAO();
     FuncionarioDAO funcionarioDAO = new FuncionarioDAO();
     VeiculoDAO veiculosDAO = new VeiculoDAO();
+    AluguelDAO aluguelDAO = new AluguelDAO();
 
     ///MENUS PRINCIPAIS
     public void menuCliente(){
@@ -166,6 +169,35 @@ public class Metodos {
         } while (loop != 0);
     }
 
+    public void menuAluguel (){
+        int loop = -1;
+        do {
+            try {
+                String menuResposta = JOptionPane.showInputDialog(null, "——— Painel de Aluguéis ———\n\n[1] - Alugar veículo\n[2] - Devolver veículo\n[3] - Listar aluguéis ativos\n[4] - Listar veículos disponíveis\n[0] - Voltar\n\n", "Menu Principal", JOptionPane.PLAIN_MESSAGE);
+
+                if (menuResposta == null) return;
+                menuResposta = menuResposta.trim();
+
+                if (menuResposta.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Você não digitou nada!", "Atenção!", JOptionPane.INFORMATION_MESSAGE);
+                    continue;
+                }
+
+                int opcao = Integer.parseInt(menuResposta);
+                switch (opcao) {
+                    case 1: alugarVeiculo(); break;
+                    case 2: devolverVeiculo(); break;
+                    case 3: listarAlugueisAtivos(); break;
+                    case 4: listarVeiculosDisponiveis(); break;
+                    case 0: loop = 0; break;
+                    default: JOptionPane.showMessageDialog(null, "Opção inválida, tente novamente.", "Atenção!", JOptionPane.INFORMATION_MESSAGE); break;
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, "Ocorreu um erro no sistema, tente novamente.\nErro: " + e.getMessage(), "Erro!", JOptionPane.ERROR_MESSAGE);
+            }
+        } while (loop != 0);
+
+    }
     /// METODOS DO MENU CLIENTE
     public void cadastroCliente(){
 
@@ -704,6 +736,157 @@ public class Metodos {
             JOptionPane.showMessageDialog(null, veiculo.toString(), "Pesquisar por placa", JOptionPane.INFORMATION_MESSAGE);
         } else {
             JOptionPane.showMessageDialog(null, "Não foi possível encontrar o veículo com essa placa.", "Pesquisar por placa", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
+    /// METODOS DO MENU ALUGUEL
+
+    public void alugarVeiculo() {
+
+        String cpf = "";
+        while (cpf.trim().isEmpty()) {
+            cpf = JOptionPane.showInputDialog(null, "Digite o CPF do cliente:\n Modelo: 000.000.000-00", "Alugar Veículo", JOptionPane.PLAIN_MESSAGE);
+            if (cpf == null) return;
+            if (cpf.trim().isEmpty()) JOptionPane.showMessageDialog(null, "O CPF não pode ficar vazio!", "Atenção!", JOptionPane.INFORMATION_MESSAGE);
+        }
+
+        Cliente cliente = clienteDAO.buscarPorCpf(cpf);
+        if (cliente == null) {
+            JOptionPane.showMessageDialog(null, "Cliente não encontrado!", "Atenção!", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        String placa = "";
+        while (placa.trim().isEmpty()) {
+            placa = JOptionPane.showInputDialog(null, "Digite a placa do veículo:", "Alugar Veículo", JOptionPane.PLAIN_MESSAGE);
+            if (placa == null) return;
+            if (placa.trim().isEmpty()) JOptionPane.showMessageDialog(null, "A placa não pode ficar vazia!", "Atenção!", JOptionPane.INFORMATION_MESSAGE);
+        }
+
+        Veiculo veiculo = veiculosDAO.buscarPorPlaca(placa);
+        if (veiculo == null) {
+            JOptionPane.showMessageDialog(null, "Veículo não encontrado!", "Atenção!", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        if (veiculo.isVeiculoDisponivel().equalsIgnoreCase("Não está disponível.")) {
+            JOptionPane.showMessageDialog(null, "Este veículo não está disponível para aluguel!", "Atenção!", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        String dataDevolucao = "";
+        long diasAluguel = 0;
+        while (dataDevolucao.trim().isEmpty()) {
+            dataDevolucao = JOptionPane.showInputDialog(null, "Digite a data de devolução:\n Modelo: dd/MM/yyyy", "Alugar Veículo", JOptionPane.PLAIN_MESSAGE);
+            if (dataDevolucao == null) return;
+            if (dataDevolucao.trim().isEmpty()) {
+                JOptionPane.showMessageDialog(null, "A data não pode ficar vazia!", "Atenção!", JOptionPane.INFORMATION_MESSAGE);
+                continue;
+            }
+            try {
+                java.time.LocalDate devolucao = java.time.LocalDate.parse(dataDevolucao.trim(),
+                        java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                java.time.LocalDate hoje = java.time.LocalDate.now();
+
+                if (!devolucao.isAfter(hoje)) {
+                    JOptionPane.showMessageDialog(null, "A data de devolução deve ser após hoje!", "Atenção!", JOptionPane.INFORMATION_MESSAGE);
+                    dataDevolucao = "";
+                    continue;
+                }
+
+                diasAluguel = java.time.temporal.ChronoUnit.DAYS.between(hoje, devolucao);
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, "Data inválida! Use o formato dd/MM/yyyy.", "Atenção!", JOptionPane.INFORMATION_MESSAGE);
+                dataDevolucao = "";
+            }
+        }
+
+        double valorTotal = diasAluguel * veiculo.getVeiculoValorDiaria();
+
+        int confirmar = JOptionPane.showConfirmDialog(null,
+                "Confirmar aluguel?\n\n" +
+                        "Cliente: " + cliente.getPessoaNome() + "\n" +
+                        "Veículo: " + veiculo.getVeiculoModelo() + " - " + veiculo.getVeiculoMarca() + "\n" +
+                        "Placa: " + placa + "\n" +
+                        "Dias: " + diasAluguel + "\n" +
+                        "Diária: R$ " + String.format("%.2f", veiculo.getVeiculoValorDiaria()) + "\n" +
+                        "Valor Total: R$ " + String.format("%.2f", valorTotal),
+                "Alugar Veículo", JOptionPane.YES_NO_OPTION);
+
+        if (confirmar != 0) return;
+
+        Aluguel aluguel = new Aluguel(cpf, placa, dataDevolucao, valorTotal);
+        aluguelDAO.inserir(aluguel);
+        veiculosDAO.atualizarDisponibilidade(placa, false);
+
+        Aluguel aluguelInserido = aluguelDAO.buscarAtivoPorPlaca(placa);
+
+        JOptionPane.showMessageDialog(null, "Aluguel realizado com sucesso!\n" + aluguelInserido, "Alugar Veículo", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    public void devolverVeiculo() {
+        String placa = "";
+        while (placa.trim().isEmpty()) {
+            placa = JOptionPane.showInputDialog(null, "Digite a placa do veículo a devolver:", "Devolver Veículo", JOptionPane.PLAIN_MESSAGE);
+            if (placa == null) return;
+            if (placa.trim().isEmpty()) JOptionPane.showMessageDialog(null, "A placa não pode ficar vazia!", "Atenção!", JOptionPane.INFORMATION_MESSAGE);
+        }
+
+        Aluguel aluguel = aluguelDAO.buscarAtivoPorPlaca(placa);
+        if (aluguel == null) {
+            JOptionPane.showMessageDialog(null, "Nenhum aluguel ativo encontrado para essa placa!", "Atenção!", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        int confirmar = JOptionPane.showConfirmDialog(null,
+                "Confirmar devolução?\n\n" + aluguel.toString(),
+                "Devolver Veículo", JOptionPane.YES_NO_OPTION);
+
+        if (confirmar != 0) return;
+
+        aluguelDAO.encerrar(aluguel.getId());
+        veiculosDAO.atualizarDisponibilidade(placa, true);
+
+        JOptionPane.showMessageDialog(null, "Veículo devolvido com sucesso!", "Devolver Veículo", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    public void listarAlugueisAtivos() {
+        List<Aluguel> alugueis = aluguelDAO.listarTodos().stream()
+                .filter(a -> a.getStatus().equals("ativo"))
+                .collect(java.util.stream.Collectors.toList());
+
+        if (alugueis.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Não há nenhum aluguel ativo.", "Aluguéis Ativos", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        for (int i = 0; i < alugueis.size(); i++) {
+            Aluguel a = alugueis.get(i);
+            if (i == alugueis.size() - 1) {
+                JOptionPane.showOptionDialog(null, a.toString(), "Aluguéis Ativos", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, new String[]{"Fim da lista"}, "Fim da lista.");
+            } else {
+                JOptionPane.showOptionDialog(null, a.toString(), "Aluguéis Ativos", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, new String[]{"Ver próximo..."}, "Ver próximo...");
+            }
+        }
+    }
+
+    public void listarVeiculosDisponiveis() {
+        List<Veiculo> disponiveis = veiculosDAO.listarTodos().stream()
+                .filter(v -> v.isVeiculoDisponivel().equalsIgnoreCase("Está disponível."))
+                .collect(java.util.stream.Collectors.toList());
+
+        if (disponiveis.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Não há veículos disponíveis no momento.", "Veículos Disponíveis", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        for (int i = 0; i < disponiveis.size(); i++) {
+            Veiculo v = disponiveis.get(i);
+            if (i == disponiveis.size() - 1) {
+                JOptionPane.showOptionDialog(null, v.toString(), "Veículos Disponíveis", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, new String[]{"Fim da lista"}, "Fim da lista.");
+            } else {
+                JOptionPane.showOptionDialog(null, v.toString(), "Veículos Disponíveis", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, new String[]{"Ver próximo..."}, "Ver próximo...");
+            }
         }
     }
 }
