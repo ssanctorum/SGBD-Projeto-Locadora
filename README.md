@@ -77,10 +77,10 @@ Clone o repositório:
 git clone https://github.com/ssanctorum/SGBD-Projeto-Locadora.git
 ```
 
-# Importe o projeto no IntelliJ, Eclipse ou VS Code
-
-# Atualize as credenciais de conexão no arquivo:
-# src/dao/Conexao.java (usuário, senha, porta e nome do banco)
-
-# Execute a classe principal 
+3. Importe o projeto no IntelliJ, Eclipse ou VS Code
+ - Atualize as credenciais de conexão no arquivo:
+```
+src/dao/Conexao.java (usuário, senha, porta e nome do banco)
+```
+ - Execute a classe principal 
 ```Menu.java```
