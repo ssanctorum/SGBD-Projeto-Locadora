@@ -56,7 +56,7 @@ src/
 │   └── Aluguel.java
 └── view/                # Interfaces com o usuário
 │   ├── Layouts_JOptionPane.java
-|   └── Menu.java
+│   └── Menu.java
 ```
 
 Como Executar
